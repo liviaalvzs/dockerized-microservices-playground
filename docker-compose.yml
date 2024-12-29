@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "5002:5000"
+    environment:
+      - DATABASE_URL=postgres://user:password@db:5432/users
+    depends_on:
+      - db
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "5001:5001"
+    environment:
+      - DATABASE_URL=postgres://user:password@db:5432/orders
+    depends_on:
+      - db
+
+  notification-worker:
+    build: ./notification-worker
+    container_name: notification-worker
+    depends_on:
+      - redis
+      - order-service
+
+  db:
+    image: postgres:13
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: orders
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:alpine
+    container_name: redis
