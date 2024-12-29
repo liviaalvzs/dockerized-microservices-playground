@@ -5,7 +5,7 @@ services:
     ports:
       - "5002:5000"
     environment:
-      - DATABASE_URL=postgres://user:password@db:5432/users 
+      - DATABASE_URL=postgresql://user:password@db:5432/app_db 
     depends_on:
       - db
 
@@ -15,7 +15,7 @@ services:
     ports:
       - "5001:5001"
     environment:
-      - DATABASE_URL=postgres://user:password@db:5432/orders
+      - DATABASE_URL=postgresql://user:password@db:5432/app_db 
     depends_on:
       - db
 
@@ -30,12 +30,11 @@ services:
     image: postgres:13
     container_name: postgres-db
     environment:
-      POSTGRES_USER: user  
+      POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: orders  
+      POSTGRES_DB: app_db  
     volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-
+      - /Users/liviaalves/Workspace/dockerized-microservices-playground/db/init.sql:/docker-entrypoint-initdb.d/init.sql
   redis:
     image: redis:alpine
     container_name: redis
